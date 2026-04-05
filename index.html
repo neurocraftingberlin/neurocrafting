@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4l1c3</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #d0ccc6;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  font-weight: bold;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  text-transform: lowercase;
+}
+
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 165px;
+  flex-shrink: 0;
+  border-right: 2px solid #808080;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #d0ccc6;
+}
+.sidebar-name {
+  padding: 18px 12px;
+  font-size: 26px;
+  background: #d0ccc6;
+  color: #111;
+  line-height: 1.4;
+  text-align: center;
+}
+.sidebar-role {
+  padding: 24px 12px;
+  font-size: 10px;
+  color: #111;
+  border-bottom: 1px solid #808080;
+  background: #d0ccc6;
+  line-height: 1.7;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  background: #d0ccc6;
+}
+.nav-item {
+  text-align: right;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: #111;
+  border-bottom: 1px solid #808080;
+  cursor: pointer;
+  background: #d0ccc6;
+}
+.nav-item:hover { background: #bbb8b2; }
+.nav-item.active {
+  background: #a8a49e;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  padding: 8px 11px 6px 13px;
+}
+.sidebar-spacer { flex: 1; background: #d0ccc6; }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  background: #dedad4;
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+}
+.section { display: none; padding: 32px 40px; }
+.section.active { display: block; }
+
+/* ── SECTION LABEL ── */
+.work-section-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #111;
+  padding: 20px 0 8px;
+  border-bottom: 2px solid #111;
+  margin-bottom: 2px;
+}
+.work-section-label:first-child { padding-top: 0; }
+
+
+.work-entry {
+  padding: 10px 0;
+  border-bottom: 1px solid #b0aca6;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.work-entry:hover { background: #111; }
+.work-entry:hover .we-title,
+.work-entry:hover .we-num,
+.work-entry:hover .we-type,
+.work-entry:hover .we-year { color: #fff; }
+.we-num { font-size: 10px; color: #111; width: 28px; flex-shrink: 0; }
+.we-title { font-size: 13px; flex: 1; color: #111; }
+.we-type { font-size: 10px; color: #111; }
+.we-year { font-size: 10px; color: #111; width: 36px; text-align: right; flex-shrink: 0; }
+
+/* ── PROJECT VIEW ── */
+.project-view { display: none; }
+
+.project-title {
+  font-size: 22px;
+  color: #111;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+.back-btn {
+  font-size: 11px;
+  color: #111;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: inline-block;
+  padding: 3px 10px;
+  background: #d0ccc6;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+}
+.back-btn:hover {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+}
+
+/* ── SLIDESHOW ── */
+.project-slideshow {
+  background: #d0ccc6;
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 48px;
+  margin-bottom: 18px;
+  min-height: 420px;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+}
+.slides-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+}
+.slide { display: none; align-items: center; justify-content: center; width: 100%; }
+.slide.active { display: flex; }
+.slide img {
+  max-width: 100%;
+  max-height: 560px;
+  object-fit: contain;
+  display: block;
+  cursor: zoom-in;
+  transition: opacity 0.15s;
+}
+.slide img:hover { opacity: 0.92; }
+.slide-arrow {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  font-size: 18px;
+  color: #cc0000;
+  cursor: pointer;
+  padding: 4px 8px;
+  user-select: none;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  z-index: 2;
+  background: #d0ccc6;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+}
+.slide-arrow:hover {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+}
+.arrow-left { left: 8px; }
+.arrow-right { right: 8px; }
+.slide-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 10px;
+  color: #111;
+}
+.zoom-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 10px;
+  color: #111;
+  cursor: pointer;
+  background: #d0ccc6;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  padding: 3px 7px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  text-transform: lowercase;
+}
+.zoom-btn:hover {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+}
+.slide-loading { font-size: 11px; color: #111; font-style: italic; }
+.slide-error { font-size: 11px; color: #111; text-align: center; line-height: 2; }
+
+/* ── LIGHTBOX ── */
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: 92vw;
+  max-height: 92vh;
+  object-fit: contain;
+  display: block;
+  cursor: default;
+}
+.lightbox-close {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  font-size: 13px;
+  color: #111;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  padding: 4px 10px;
+  background: #d0ccc6;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  text-transform: lowercase;
+}
+.lightbox-close:hover {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+}
+.lightbox-arrow {
+  position: fixed;
+  top: 50%; transform: translateY(-50%);
+  font-size: 18px;
+  color: #111;
+  cursor: pointer;
+  padding: 6px 12px;
+  background: #d0ccc6;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+.lightbox-arrow:hover {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #fff;
+  border-right: 2px solid #fff;
+}
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
+.lightbox-counter {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #111;
+  font-family: 'Courier New', monospace;
+}
+
+.project-desc {
+  font-size: 12px;
+  color: #111;
+  max-width: 460px;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.project-meta { font-size: 10px; color: #111; line-height: 2.2; }
+
+/* ── BIO ── */
+.bio-wrap { max-width: 480px; }
+.bio-wrap p { margin-bottom: 16px; line-height: 1.9; color: #111; font-size: 15px; text-align: justify; }
+.bio-wrap h3 { font-size: 10px; letter-spacing: 0.2em; color: #111; margin: 28px 0 10px; }
+.bio-wrap ul { list-style: none; color: #111; line-height: 2.4; font-size: 12px; }
+.bio-wrap ul li::before { content: '— '; color: #111; }
+.bio-wrap a { color: #cc0000; }
+
+/* ── CONTACT ── */
+.contact-wrap { max-width: 360px; }
+.contact-wrap p { line-height: 2.6; font-size: 13px; color: #111; }
+.contact-wrap a { color: #cc0000; }
+.contact-wrap a:hover { text-decoration: underline; }
+.contact-section-label { font-size: 10px; color: #111; margin: 24px 0 8px; letter-spacing: 0.15em; }
+.contact-avail { margin-top: 24px; font-size: 11px; color: #090; }
+.contact-avail::before { content: '● '; animation: blink 1.4s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-name">4l1c3</div>
+  <div class="sidebar-role">
+    multidisciplinary artist
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" onclick="showSection('bio', this)">bio</div>
+    <div class="nav-item" onclick="showSection('work', this)">work</div>
+    <div class="nav-item" onclick="showSection('contact', this)">contact</div>
+  </nav>
+  <div class="sidebar-spacer"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- WORK -->
+  <div class="section" id="sec-work">
+
+    <!-- INDEX -->
+    <div id="work-index">
+
+      <div class="work-section-label">work</div>
+      <div class="work-entry" onclick="showProject('memento-mari')">
+        <span class="we-num">001</span>
+        <span class="we-title">memento mari</span>
+        <span class="we-type">photography</span>
+        <span class="we-year">2019–21</span>
+      </div>
+      <div class="work-entry" onclick="showProject('inner-work')">
+        <span class="we-num">002</span>
+        <span class="we-title">the inner work</span>
+        <span class="we-type">mixed media</span>
+        <span class="we-year">2023–26</span>
+      </div>
+      <div class="work-entry" onclick="showProject('contacto-cero')">
+        <span class="we-num">003</span>
+        <span class="we-title">contacto cero</span>
+        <span class="we-type">acrylic on canvas</span>
+        <span class="we-year">2025</span>
+      </div>
+      <div class="work-entry" onclick="showProject('collage')">
+        <span class="we-num">004</span>
+        <span class="we-title">collage series</span>
+        <span class="we-type">collage</span>
+        <span class="we-year">2024</span>
+      </div>
+      <div class="work-entry" onclick="showProject('graphite')">
+        <span class="we-num">005</span>
+        <span class="we-title">graphite experiments</span>
+        <span class="we-type">graphite</span>
+        <span class="we-year">2026</span>
+      </div>
+
+      <div class="work-section-label">zines</div>
+      <div class="work-entry" onclick="showProject('slug-era')">
+        <span class="we-num">001</span>
+        <span class="we-title">slug era</span>
+        <span class="we-year">2024</span>
+      </div>
+      <div class="work-entry" onclick="showProject('neuro-zine')">
+        <span class="we-num">002</span>
+        <span class="we-title">neuro zine</span>
+        <span class="we-year">2025</span>
+      </div>
+      <div class="work-entry" onclick="showProject('random')">
+        <span class="we-num">003</span>
+        <span class="we-title">random</span>
+        <span class="we-year">—</span>
+      </div>
+
+    </div>
+
+    <!-- PROJECT VIEW (filled dynamically) -->
+    <div class="project-view" id="proj-active">
+      <div class="back-btn" onclick="showIndex()">← back</div>
+      <div class="project-title" id="proj-title"></div>
+      <!-- manifest slideshow -->
+      <div class="project-slideshow" id="proj-slideshow">
+        <button class="slide-arrow arrow-left" onclick="prevSlide()">&#60;</button>
+        <div class="slides-wrap" id="slides-wrap"></div>
+        <button class="slide-arrow arrow-right" onclick="nextSlide()">&#62;</button>
+        <div class="slide-counter" id="slide-counter"></div>
+        <button class="zoom-btn" onclick="openLightbox()">⊕ fullscreen</button>
+      </div>
+      <!-- flickr embed -->
+      <div id="proj-flickr" style="display:none;margin-bottom:18px;max-width:700px"></div>
+      <div class="project-desc" id="proj-desc"></div>
+      <div class="project-meta" id="proj-meta"></div>
+    </div>
+
+  </div>
+
+  <!-- BIO -->
+  <div class="section active" id="sec-bio">
+    <div class="bio-wrap">
+      <div style="display:flex;gap:32px;align-items:flex-start;margin-bottom:24px">
+        <img src="alice-photo.png" alt="4l1c3" style="width:120px;flex-shrink:0;border-top:2px solid #808080;border-left:2px solid #808080;border-bottom:2px solid #fff;border-right:2px solid #fff;">
+        <div>
+          <p>4l1c3 (b. 1997, tenerife) is a multidisciplinary artist, community builder and event organizer based in berlin.</p>
+          <p>her practice moves across photography, painting, drawing and collage — often circling around grief, the body, slowness and the interior life.</p>
+          <p>she also runs the <a href="https://www.meetup.com/neurodivergent-creative-club/" target="_blank">neurodivergent creative club</a>, a weekly event in berlin for neurodivergent people to connect and create together.</p>
+        </div>
+      </div>
+      <h3>also</h3>
+      <ul>
+        <li><a href="https://www.meetup.com/neurodivergent-creative-club/" target="_blank">neurodivergent creative club ↗</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section" id="sec-contact">
+    <div class="contact-wrap">
+      <p>
+        <a href="https://www.instagram.com/4.l1c3/" target="_blank">↳ instagram</a><br>
+        <a href="https://4l1c3.neocities.org/neurodivergent-creative-club/" target="_blank">↳ neurodivergent creative club</a><br>
+        <a href="https://www.meetup.com/neurodivergent-creative-club/" target="_blank">↳ meetups</a>
+      </p>
+      <div class="contact-section-label">berlin, de</div>
+      <div class="contact-avail">open for collaboration</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">✕ close</button>
+  <button class="lightbox-arrow lightbox-prev" onclick="lbPrev(event)">&#60;</button>
+  <img id="lightbox-img" src="" alt="">
+  <button class="lightbox-arrow lightbox-next" onclick="lbNext(event)">&#62;</button>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
+<script>
+// ── PROJECT DATA ──
+const projects = {
+  'memento-mari': {
+    title: 'memento mari',
+    folder: 'images/memento-mari',
+    desc: `a collection of analogue photographs taken between 2019 and 2021.<br><br>
+           memento mari is a play on words and a way to honour, process and remember the loss of one of the most important figures in my life — my aunt mari. her loss transcends time and space and invades my everyday life.<br><br>
+           <em>my hands are always cold now that you are not here to hold them.</em>`,
+    meta: `medium &nbsp;·&nbsp; analogue photography<br>year &nbsp;·&nbsp; 2019–2021`
+  },
+  'slug-era': {
+    title: 'slug era',
+    folder: 'images/slug-era',
+    desc: `slug era is a speculative fanzine exploring slowness, rest, and authentic self-care through a conceptual pun.<br><br>
+           drawing inspiration from the 2022 "slut era" internet phenomenon — a term reclaimed as an invitation to liberation and living authentically — i created a visual metaphor by replacing "slut" with "slug," the slow-moving gastropod.<br><br>
+           the fanzine physically manifests this concept: designed as an oversized slug, it splits in half when opened, revealing content that invites readers to pause, breathe, and simply observe the world around them.<br><br>
+           informed by research on slug pain perception and neurobiology, the biomorphic form became both conceptual statement and functional design.<br><br>
+           to facilitate grassroots distribution, i developed the "slug kit," enabling anyone to assemble and camouflage the fanzines throughout their cities — transforming the project into a participatory invitation for strangers to slow down and reconsider what rest truly means.`,
+    meta: `medium &nbsp;·&nbsp; mixed media<br>year &nbsp;·&nbsp; 2024`
+  },
+  'inner-work': {
+    title: 'the inner work',
+    folder: 'images/inner-work',
+    desc: `when i sit quietly alone and let my thoughts wander, i deliberately call up memories from the past.<br><br>
+           this is the poignancy of a cherished pain, a chance to break the cycle, a sacrificed childhood in the name of survival. this series of works casts a beam of light into the heart of my own darkness and releases it.`,
+    meta: `medium &nbsp;·&nbsp; mixed media<br>year &nbsp;·&nbsp; 2023–2026`
+  },
+  'contacto-cero': {
+    title: 'contacto cero',
+    folder: 'images/contacto-cero',
+    desc: `70×60cm acrylic on canvas.`,
+    meta: `medium &nbsp;·&nbsp; acrylic on canvas<br>dimensions &nbsp;·&nbsp; 70×60cm<br>year &nbsp;·&nbsp; 2025`
+  },
+  'collage': {
+    title: 'collage series',
+    folder: 'images/collage',
+    desc: `a series of collages.`,
+    meta: `medium &nbsp;·&nbsp; collage<br>year &nbsp;·&nbsp; 2024`
+  },
+  'neuro-zine': {
+    title: 'neuro zine',
+    folder: 'images/neuro-zine',
+    desc: `a zine created for neurodivergence day, for a zine workshop held at neuro dance — an event by the neurodiversity foundation in the netherlands.<br><br>
+           the workshop invited participants to unleash their imagination in a safe space — embracing creativity and inclusivity with fellow neurodivergent artists.<br><br>
+           designed to accompany a live making session on june 16th, 2025.`,
+    meta: `year &nbsp;·&nbsp; 2025<br>event &nbsp;·&nbsp; neuro dance, neurodiversity foundation<br>location &nbsp;·&nbsp; amstelveen, netherlands`
+  },
+  'random': {
+    title: 'random',
+    folder: 'images/random',
+    desc: ``,
+    meta: `medium &nbsp;·&nbsp; zine`
+  },
+  'graphite': {
+    title: 'graphite experiments',
+    flickr: `<iframe src="https://www.flickr.com/photos/204398912@N03/albums/72177720332722097/player/" width="100%" height="500" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen style="display:block"></iframe>`,
+    desc: `graphite experiments.`,
+    meta: `medium &nbsp;·&nbsp; graphite<br>year &nbsp;·&nbsp; 2026`
+  }
+};
+
+// ── STATE ──
+let currentSlides = [];
+let currentIndex = 0;
+
+// ── NAV ──
+window.showSection = function(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  el.classList.add('active');
+  if (id === 'work') showIndex();
+};
+
+window.showIndex = function() {
+  document.getElementById('work-index').style.display = '';
+  document.getElementById('proj-active').style.display = 'none';
+};
+
+// ── OPEN PROJECT ──
+window.showProject = async function(id) {
+  const p = projects[id];
+  if (!p) return;
+
+  document.getElementById('work-index').style.display = 'none';
+  const view = document.getElementById('proj-active');
+  view.style.display = 'block';
+
+  document.getElementById('proj-title').textContent = p.title;
+  document.getElementById('proj-desc').innerHTML = p.desc;
+  document.getElementById('proj-meta').innerHTML = p.meta;
+
+  const slideshow = document.getElementById('proj-slideshow');
+  const flickrWrap = document.getElementById('proj-flickr');
+  const wrap = document.getElementById('slides-wrap');
+  const counter = document.getElementById('slide-counter');
+  currentSlides = [];
+  currentIndex = 0;
+
+  // ── FLICKR MODE ──
+  if (p.flickr) {
+    slideshow.style.display = 'none';
+    flickrWrap.style.display = 'block';
+    flickrWrap.innerHTML = p.flickr;
+    // re-run flickr embed script
+    if (window.flickrEmbed) window.flickrEmbed.init();
+    return;
+  }
+
+  // ── MANIFEST MODE ──
+  slideshow.style.display = '';
+  flickrWrap.style.display = 'none';
+  flickrWrap.innerHTML = '';
+  wrap.innerHTML = '<div class="slide-loading">loading...</div>';
+  counter.textContent = '';
+
+  try {
+    const res = await fetch(`${p.folder}/manifest.json`);
+    if (!res.ok) throw new Error();
+    const filenames = await res.json();
+    if (!filenames.length) throw new Error();
+
+    wrap.innerHTML = '';
+    filenames.forEach((name, i) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide' + (i === 0 ? ' active' : '');
+      const img = document.createElement('img');
+      img.src = `${p.folder}/${name}`;
+      img.alt = `${p.title} — ${i + 1}`;
+      img.onclick = () => openLightbox();
+      slide.appendChild(img);
+      wrap.appendChild(slide);
+    });
+
+    currentSlides = wrap.querySelectorAll('.slide');
+    updateCounter();
+
+  } catch(e) {
+    wrap.innerHTML = `<div class="slide-error">
+      no images yet<br>
+      upload to <strong>images/${id}/</strong><br>
+      and add a <strong>manifest.json</strong>
+    </div>`;
+  }
+};
+
+function updateCounter() {
+  const counter = document.getElementById('slide-counter');
+  counter.textContent = currentSlides.length > 1
+    ? `${currentIndex + 1} / ${currentSlides.length}`
+    : '';
+}
+
+// ── LIGHTBOX ──
+window.openLightbox = function() {
+  if (!currentSlides.length) return;
+  const img = currentSlides[currentIndex].querySelector('img');
+  if (!img) return;
+  document.getElementById('lightbox-img').src = img.src;
+  document.getElementById('lightbox').classList.add('open');
+  updateLbCounter();
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeLightbox = function(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+window.lbPrev = function(e) {
+  e.stopPropagation();
+  if (currentSlides.length < 2) return;
+  currentSlides[currentIndex].classList.remove('active');
+  currentIndex = (currentIndex - 1 + currentSlides.length) % currentSlides.length;
+  currentSlides[currentIndex].classList.add('active');
+  updateCounter();
+  const img = currentSlides[currentIndex].querySelector('img');
+  if (img) document.getElementById('lightbox-img').src = img.src;
+  updateLbCounter();
+};
+
+window.lbNext = function(e) {
+  e.stopPropagation();
+  if (currentSlides.length < 2) return;
+  currentSlides[currentIndex].classList.remove('active');
+  currentIndex = (currentIndex + 1) % currentSlides.length;
+  currentSlides[currentIndex].classList.add('active');
+  updateCounter();
+  const img = currentSlides[currentIndex].querySelector('img');
+  if (img) document.getElementById('lightbox-img').src = img.src;
+  updateLbCounter();
+};
+
+function updateLbCounter() {
+  document.getElementById('lightbox-counter').textContent =
+    currentSlides.length > 1 ? `${currentIndex + 1} / ${currentSlides.length}` : '';
+}
+
+// close lightbox on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+  if (e.key === 'ArrowLeft') lbPrev({stopPropagation:()=>{}});
+  if (e.key === 'ArrowRight') lbNext({stopPropagation:()=>{}});
+});
+
+window.prevSlide = function() {
+  if (currentSlides.length < 2) return;
+  currentSlides[currentIndex].classList.remove('active');
+  currentIndex = (currentIndex - 1 + currentSlides.length) % currentSlides.length;
+  currentSlides[currentIndex].classList.add('active');
+  updateCounter();
+};
+
+window.nextSlide = function() {
+  if (currentSlides.length < 2) return;
+  currentSlides[currentIndex].classList.remove('active');
+  currentIndex = (currentIndex + 1) % currentSlides.length;
+  currentSlides[currentIndex].classList.add('active');
+  updateCounter();
+};
+</script>
+
+</body>
+</html>
