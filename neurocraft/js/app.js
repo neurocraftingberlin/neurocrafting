@@ -235,19 +235,59 @@ function clearPaint() {
 }
 
 // ====== HALL OF FAME SLIDESHOW ======
-const hofPhotos = [
-  // Add your photos here as objects: { src: 'URL or data:image/...', caption: 'your caption' }
-  // Example: { src: 'https://example.com/photo.jpg', caption: 'collage night, march 2025' }
-];
+// Photos are auto-discovered from the folder below. Just drop numbered image
+// files in it (1.jpg, 2.png, 3.jpeg, ...) — see that folder's README.txt.
+let hofPhotos = [];
+
+const HOF_DIR = 'img/hall-of-fame/';
+const HOF_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'JPG', 'JPEG', 'PNG'];
+const HOF_MAX = 300; // safety cap on how many numbered photos to probe for
 
 let hofIndex = 0;
 let hofView = 'grid';
 let hofAutoTimer = null;
+let hofDiscovered = false;
+let hofDiscovering = false;
 
-function hofInit() {
+// Try to load one image URL; resolve to the URL if it loads, else null.
+function hofTryLoad(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img.naturalWidth > 0 ? src : null);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+// Probe 1.*, 2.*, 3.* ... until a number is missing (no matching extension).
+async function hofDiscover() {
+  const found = [];
+  for (let n = 1; n <= HOF_MAX; n++) {
+    let hit = null;
+    for (const ext of HOF_EXTS) {
+      // eslint-disable-next-line no-await-in-loop
+      const ok = await hofTryLoad(HOF_DIR + n + '.' + ext);
+      if (ok) { hit = ok; break; }
+    }
+    if (!hit) break; // first gap ends the sequence
+    found.push({ src: hit, caption: '' });
+  }
+  return found;
+}
+
+async function hofInit() {
+  if (!hofDiscovered && !hofDiscovering) {
+    hofDiscovering = true;
+    const grid = document.getElementById('hof-grid');
+    if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#888;font-size:11px;">loading photos… 💜</div>';
+    hofPhotos = await hofDiscover();
+    hofDiscovered = true;
+    hofDiscovering = false;
+  }
   hofRenderGrid();
   hofUpdateCounter();
   hofUpdateStatus();
+  if (hofView === 'slideshow') hofUpdateSlide();
 }
 
 function hofRenderGrid() {
