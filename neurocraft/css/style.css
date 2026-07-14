@@ -655,3 +655,137 @@
     display: flex; align-items: center; gap: 4px;
   }
   @keyframes bobble { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+
+  /* ============================================================
+     MOBILE / HANDHELD EDITION
+     Same OS, shrunk onto a phone: desktop icons become a home
+     grid, floating windows become full-screen apps, the taskbar
+     becomes a bottom home bar, the start menu becomes an app
+     drawer. All window content is reused as-is.
+     ============================================================ */
+  @media (max-width: 768px) {
+
+    html, body {
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: auto;
+      min-height: 100%;
+    }
+
+    /* ---- HOME SCREEN ---- */
+    #desktop {
+      height: auto;
+      min-height: 100vh;
+      overflow: visible;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      justify-content: center;
+      padding: 14px 10px 72px;   /* bottom room for the home bar */
+      gap: 4px 0;
+    }
+
+    /* photo strip turns into a centered "profile" banner up top */
+    .photo-strip {
+      position: static;
+      transform: none;
+      order: -1;
+      flex: 0 0 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 4px 0 16px;
+    }
+    .photo-strip-inner img,
+    #alice-photo {
+      width: auto !important;
+      max-width: 55vw;
+      max-height: 150px;
+      height: auto;
+    }
+    .photo-strip-hover {
+      position: static;
+      transform: none;
+      opacity: 1;
+      margin-top: 6px;
+    }
+
+    /* icons flow into a tap-friendly grid (3 per row) */
+    .desktop-icon {
+      position: static !important;
+      left: auto !important; top: auto !important;
+      right: auto !important; bottom: auto !important;
+      flex: 0 0 33.3333%;
+      width: auto;
+      padding: 12px 4px;
+    }
+    .desktop-icon img { width: 52px; height: 52px; }
+    .desktop-icon .icon-img { font-size: 40px; }
+    .desktop-icon span { font-size: 12px; }
+
+    /* decorations that only make sense with a mouse */
+    .desktop-mascot { display: none !important; }
+
+    /* ---- WINDOWS become full-screen apps ---- */
+    .xp-window { min-width: 0; }
+    .xp-window.show {
+      position: fixed !important;
+      left: 0 !important;
+      top: 0 !important;
+      right: 0 !important;
+      bottom: 46px !important;      /* sit above the home bar */
+      width: auto !important;
+      height: auto !important;
+      max-width: none;
+      max-height: none;
+      border-radius: 0;
+      resize: none;
+      z-index: 5000 !important;
+    }
+    .xp-titlebar { height: 40px; cursor: default; }
+    .xp-title-icon { font-size: 18px; }
+    .xp-title-text { font-size: 13px; }
+    .xp-btn { width: 30px; height: 28px; font-size: 13px; }
+    .xp-menu-item { padding: 4px 10px; }
+    .xp-content { padding: 12px; font-size: 13px; }
+
+    /* grids relax to 2 columns so cards stay tappable */
+    .workshop-grid,
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    .workshop-card { padding: 14px 8px; }
+    .workshop-card .wc-icon { font-size: 34px; }
+
+    /* ---- HOME BAR (taskbar) ---- */
+    #taskbar { height: 46px; }
+    #start-btn {
+      height: 40px;
+      font-size: 15px;
+      border-radius: 0 20px 20px 0;
+      padding: 0 18px 0 12px;
+    }
+    #start-btn .start-logo { font-size: 22px; }
+    #taskbar-buttons { display: none; }      /* windows are full-screen; no need */
+    .marquee-wrapper { display: none; }
+    #taskbar-tray { height: 40px; font-size: 13px; }
+
+    /* ---- START MENU becomes a full-screen app drawer ---- */
+    #start-menu {
+      width: 100% !important;
+      top: 0 !important;
+      bottom: 46px !important;
+      border-radius: 0;
+      border-width: 0;
+      z-index: 6000;
+      flex-direction: column;
+    }
+    #start-menu.show { display: flex; }
+    .start-header { padding: 16px; font-size: 18px; }
+    .start-header .avatar { font-size: 40px; }
+    .start-columns { flex: 1; overflow-y: auto; flex-direction: column; }
+    .start-left, .start-right { flex: none; border-right: none; }
+    .start-right { background: #f7f0fb; }
+    .start-item { padding: 14px 18px; }
+    .start-item .si-icon { font-size: 24px; }
+    .start-item .si-text { font-size: 14px; }
+    .start-item .si-text small { font-size: 12px; }
+  }

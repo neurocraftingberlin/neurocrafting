@@ -190,6 +190,14 @@ function initPaint() {
   canvas.addEventListener('mousemove', e => { if (painting) draw(e, canvas); });
   canvas.addEventListener('mouseup', () => { painting = false; });
   canvas.addEventListener('mouseleave', () => { painting = false; });
+  // touch support (mobile)
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); painting = true; paintCtx.beginPath(); dot(touchAsMouse(e), canvas); }, { passive: false });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if (painting) draw(touchAsMouse(e), canvas); }, { passive: false });
+  canvas.addEventListener('touchend', () => { painting = false; });
+}
+function touchAsMouse(e) {
+  const t = e.touches[0] || e.changedTouches[0];
+  return { clientX: t.clientX, clientY: t.clientY };
 }
 function getPos(e, canvas) {
   const r = canvas.getBoundingClientRect();
@@ -353,6 +361,24 @@ openWindow = function(name) {
   _origOpenWindow(name);
   if (name === 'halloffame') setTimeout(() => { hofSetView('grid'); hofInit(); }, 50);
 };
+
+// ====== MOBILE / HANDHELD ENHANCEMENTS ======
+// On the desktop the icons and workshop cards open on double-click, which is
+// unreliable on touch. On small/touch screens, make a single tap trigger the
+// same action.
+(function () {
+  const isHandheld = window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window);
+  if (!isHandheld) return;
+  function tapToOpen(selector) {
+    document.querySelectorAll(selector).forEach(el => {
+      el.addEventListener('click', function (e) {
+        if (typeof el.ondblclick === 'function') el.ondblclick.call(el, e);
+      });
+    });
+  }
+  tapToOpen('.desktop-icon');
+  tapToOpen('.workshop-card');
+})();
 
 // ====== CURSOR STARS ======
 const stars = ['✨','⭐','🌸','💜','★','✦'];
